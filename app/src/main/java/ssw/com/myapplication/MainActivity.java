@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
                             String url = editText2.getText().toString();
 
                             try {
-                                sendPOSTRequest(getApplicationContext(),url,new HashMap<String, String>(),null);
+                                JSONObject json = new JSONObject();
+                                json.put("requestId",System.currentTimeMillis());
+                                sendPOSTRequest(getApplicationContext(),url,json.toString(),null);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -73,9 +77,9 @@ public class MainActivity extends AppCompatActivity {
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences spf = getSharedPreferences("BaiduSPF",0);
+                SharedPreferences spf = getSharedPreferences("SPF",0);
                 SharedPreferences.Editor editor = spf.edit();
-                editor.remove("cookie");
+                editor.remove("baiduCookie");
                 if(editor.commit()) {
                     Toast.makeText(mcontext, "Cookieq清除完成", Toast.LENGTH_SHORT).show();
                 }
@@ -91,12 +95,12 @@ public class MainActivity extends AppCompatActivity {
      * @return
      * @throws Exception
      */
-    public  boolean sendPOSTRequest(Context context,String baseUrl, HashMap<String, String> params, Handler handler) throws Exception{
+    public  boolean sendPOSTRequest(Context context,String baseUrl,String params, Handler handler) throws Exception{
 
        // mContext = context;
 
         // 设置参数
-        byte[] entity = onParams(params);
+        byte[] entity = params.getBytes();
 
         // 设置请求链接
         HttpURLConnection conn = onSetConn(mcontext, baseUrl, entity);
@@ -122,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
  * @return
          * @throws UnsupportedEncodingException
  */
-    private  byte[] onParams(HashMap<String, String> params) throws UnsupportedEncodingException {
+    private  byte[] onParams(Map<String, Object> params) throws UnsupportedEncodingException {
         if (params == null || params.isEmpty()){
             params = new HashMap<>();
         }
@@ -133,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
         //StringBuilder是用来组拼请求参数
         StringBuilder sb = new StringBuilder();
         if(params != null && params.size() != 0){
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                sb.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), "utf-8"));
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                sb.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue().toString(), "utf-8"));
                 sb.append("&");
             }
             sb.deleteCharAt(sb.length()-1);
@@ -155,22 +159,22 @@ public class MainActivity extends AppCompatActivity {
         conn.setUseCaches(false);
         // 1、POST请求这个一定要设置
         conn.setRequestProperty("Content-Type", "application/json");
-       // conn.setRequestProperty("Content-Length", "395931");
         // 2、添加cookie信息
-        SharedPreferences spf = getSharedPreferences("BaiduSPF",Context.MODE_PRIVATE);
+        SharedPreferences spf = getSharedPreferences("SPF",Context.MODE_PRIVATE);
 
-        String temp_cookie = spf.getString("cookie","");
+        String temp_cookie = spf.getString("baiduCookie","");
         Log.e("test_cookie","temp_cookie is " + temp_cookie);
         if (!TextUtils.isEmpty(temp_cookie)){
             conn.setRequestProperty("Cookie",temp_cookie);
         }
+        conn.setRequestProperty("Content-Length", String.valueOf(entity.length));
         // 3、参数信息
-      //  OutputStream out = conn.getOutputStream();
+        OutputStream out = conn.getOutputStream();
         //写入参数值
-      //  out.write(entity);
+        out.write(entity);
         //刷新、关闭
-      //  out.flush();
-      //  out.close();
+        out.flush();
+        out.close();
         return conn;
     }
     private static String getStreamAsString(InputStream stream, String charset) throws IOException {

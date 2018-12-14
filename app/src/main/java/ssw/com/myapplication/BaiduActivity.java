@@ -15,6 +15,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BaiduActivity extends AppCompatActivity {
     private WebView webView;
     private String TAG = "BaiduActivity";
@@ -60,11 +63,17 @@ public class BaiduActivity extends AppCompatActivity {
             String CookieStr = cookieManager.getCookie(url);
             if (CookieStr != null) {
                 if(url.startsWith("https://pet-chain.baidu.com")) {
-                    SharedPreferences spf = getSharedPreferences("BaiduSPF", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = spf.edit();
-                    editor.putString("cookie", CookieStr);
-                    if(editor.commit()) {
-                        Toast.makeText(getApplicationContext(), "Cookieq存储完成", Toast.LENGTH_SHORT).show();
+
+                    Map<String,String> cookieMap = resolveCookie(CookieStr);
+                    String BDUSS = cookieMap.get("BDUSS");
+                    String STOKEN = cookieMap.get("STOKEN");
+                    if(isNoBlank(BDUSS) && isNoBlank(STOKEN)){
+                        SharedPreferences spf = getSharedPreferences("SPF", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = spf.edit();
+                        editor.putString("baiduCookie", "BDUSS="+BDUSS+";STOKEN="+STOKEN);
+                        if(editor.commit()) {
+                            Toast.makeText(getApplicationContext(), "Cookieq存储完成", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
                 Log.i(TAG+":url",url);
@@ -102,5 +111,22 @@ public class BaiduActivity extends AppCompatActivity {
 
 
     }
-
+    public Map<String,String> resolveCookie(String orgCookie){
+        Map<String,String> cookieMap = new HashMap<>();
+        String[] orgCookies = orgCookie.split(";");
+        for(int i = 0; i < orgCookies.length; i++){
+            String[] items = orgCookies[i].split("=");
+            cookieMap.put(items[0].trim(),items[1].trim());
+        }
+        return cookieMap;
+    }
+    public boolean isNoBlank(String str){
+        if(null == str){
+            return false;
+        }
+        if("".equals(str.trim())){
+            return false;
+        }
+        return true;
+    }
 }
