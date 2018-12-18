@@ -1,4 +1,4 @@
-package ssw.com.myapplication;
+package ssw.com.myapplication.other;
 
 public class HelloLibrary {
     static {

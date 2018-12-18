@@ -9,13 +9,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
+
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -31,60 +35,61 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+@EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
     private  Context mcontext;
-    TextView textView4;
-    EditText editText2;
+    @ViewById(R.id.tv_content)
+    TextView tvContent;
+    @ViewById(R.id.et_url)
+    EditText etUrl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        TextView textView = findViewById(R.id.textView);
-      //  textView.setText(new HelloLibrary().sayHello());
-        editText2 = findViewById(R.id.editText2);
-        textView4 = findViewById(R.id.textView4);
-        textView4.setMovementMethod(ScrollingMovementMethod.getInstance());
-        Button button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,BaiduActivity.class);
-                startActivity(intent);
-            }
-        });
         mcontext = this;
-        Button button1 = findViewById(R.id.button2);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    new Thread(){
-                        public void run(){
+    }
+    @Override
+    protected void onStart(){
+        super.onStart();
+        //  textView.setText(new HelloLibrary().sayHello());
+        tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());
 
-                            String url = editText2.getText().toString();
+    }
+    @Click(R.id.bt_login)
+    public void onbuttonClick(View view) {
+        Intent intent = new Intent(MainActivity.this,BaiduActivity_.class);
+        startActivity(intent);
+    }
+    @Click(R.id.bt_clear_cookie)
+    public void onbutton3Click(View view) {
+        SharedPreferences spf = getSharedPreferences("SPF",0);
+        SharedPreferences.Editor editor = spf.edit();
+        editor.remove("baiduCookie");
+        if(editor.commit()) {
+            Toast.makeText(mcontext, "Cookieq清除完成", Toast.LENGTH_SHORT).show();
+        }
+    }
+    @Click(R.id.bt_visit_url)
+    public void onbutton1Click(View view) {
+        new Thread(){
+            public void run(){
 
-                            try {
-                                JSONObject json = new JSONObject();
-                                json.put("requestId",System.currentTimeMillis());
-                                sendPOSTRequest(getApplicationContext(),url,json.toString(),null);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }.start();
-            }
-        });
-        Button button3 = findViewById(R.id.button3);
-        button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences spf = getSharedPreferences("SPF",0);
-                SharedPreferences.Editor editor = spf.edit();
-                editor.remove("baiduCookie");
-                if(editor.commit()) {
-                    Toast.makeText(mcontext, "Cookieq清除完成", Toast.LENGTH_SHORT).show();
+                String url = etUrl.getText().toString();
+
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("requestId",System.currentTimeMillis());
+                    sendPOSTRequest(getApplicationContext(),url,json.toString(),null);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        });
+        }.start();
     }
     /**
      * 发送请求
@@ -96,6 +101,14 @@ public class MainActivity extends AppCompatActivity {
      * @throws Exception
      */
     public  boolean sendPOSTRequest(Context context,String baseUrl,String params, Handler handler) throws Exception{
+        MediaType type = MediaType.parse("application/json;charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(type,params);
+        Request request = new Request.Builder().url(baseUrl).post(body).build();
+        Response response = client.newCall(request).execute();
+        Logger.i("OkHttp Post:",response.body().toString());
+        Logger.d("OkHttp Post:",response.body().toString());
+
 
        // mContext = context;
 
@@ -111,9 +124,9 @@ public class MainActivity extends AppCompatActivity {
         if (HttpURLConnection.HTTP_OK == responseCode) {
             String charset = getResponseCharset(conn.getContentType());
             String result = getStreamAsString(conn.getInputStream(), charset);
-            textView4.setText(result);
+            tvContent.setText(result);
         } else {
-            textView4.setText("errorcode："+responseCode);
+            tvContent.setText("errorcode："+responseCode);
         }
 
         if(conn!=null){
@@ -163,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences spf = getSharedPreferences("SPF",Context.MODE_PRIVATE);
 
         String temp_cookie = spf.getString("baiduCookie","");
-        Log.e("test_cookie","temp_cookie is " + temp_cookie);
+        Logger.e("test_cookie","temp_cookie is " + temp_cookie);
         if (!TextUtils.isEmpty(temp_cookie)){
             conn.setRequestProperty("Cookie",temp_cookie);
         }

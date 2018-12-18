@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceResponse;
@@ -15,20 +14,29 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
+
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.ViewsById;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@EActivity(R.layout.activity_baidu)
 public class BaiduActivity extends AppCompatActivity {
-    private WebView webView;
+    @ViewById(R.id.webView)
+    WebView webView;
     private String TAG = "BaiduActivity";
     //private String url = "https://www.baidu.com";
     private String url = "https://wappass.baidu.com/passport/login?sms=1&adapter=3&u=%2F%2Fwappass.baidu.com%2Fv3%2Flogin%2Fapi%2Fauth%2F%3Freturn_type%3D5%26tpl%3Dblockchain%26u%3Dhttps%253A%252F%252Fpet-chain.baidu.com%252Fdata%252Fuser%252Fsign%253Fu%253Dhttps%25253A%25252F%25252Fpet-chain.baidu.com%25252Fchain%25252Fpersonal";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_baidu);
-
-        webView = findViewById(R.id.webView);
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
         webView.requestFocus();
         webView.setHorizontalScrollBarEnabled(false);
         webView.setVerticalScrollBarEnabled(false);
@@ -44,7 +52,6 @@ public class BaiduActivity extends AppCompatActivity {
         webView.loadUrl(url);
         webView.setWebViewClient(new MyWebViewClient());
     }
-
     private class MyWebViewClient extends WebViewClient {
 
         /**
@@ -53,7 +60,7 @@ public class BaiduActivity extends AppCompatActivity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            Log.d(TAG,"onPageStarted");
+            Logger.d(TAG,"onPageStarted");
         }
         /**
          * 在结束加载网页时会回调
@@ -76,8 +83,8 @@ public class BaiduActivity extends AppCompatActivity {
                         }
                     }
                 }
-                Log.i(TAG+":url",url);
-                Log.i(TAG+":cookie", CookieStr);
+                Logger.i(TAG+":url",url);
+                Logger.i(TAG+":cookie", CookieStr);
             }
             super.onPageFinished(view, url);
         }
@@ -93,13 +100,13 @@ public class BaiduActivity extends AppCompatActivity {
          * 加载错误的时候会回调，在其中可做错误处理，比如再请求加载一次，或者提示404的错误页面
          */
         public void onReceivedError(WebView view, int errorCode,String description, String failingUrl){
-            Log.e(TAG,"出错误了");
+            Logger.e(TAG,"出错误了");
         }
         /**
          * 当接收到https错误时，会回调此函数，在其中可以做错误处理
          */
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
-                Log.e(TAG,"出错误了");
+            Logger.e(TAG,"出错误了");
                 super.onReceivedSslError(view,handler,error);
         }
         /**
