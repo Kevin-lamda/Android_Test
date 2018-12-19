@@ -18,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".BaiduActivity_"/>
+        <activity android:name=".HomeActivity_"/>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
 
