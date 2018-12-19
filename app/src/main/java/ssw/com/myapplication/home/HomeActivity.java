@@ -4,32 +4,42 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import ssw.com.myapplication.R;
 
-@EActivity(R.layout.activity_home)
 public class HomeActivity extends AppCompatActivity {
-    @ViewById(R.id.bottom_tab_layout)
     TabLayout bottomTabLayout;
     Fragment[] mfragments;
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         mfragments = DataGenerator.getFragments("TabLayout Tab");
+        setContentView(R.layout.activity_home);
+        initView();
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
     }
     public void initView(){
+        bottomTabLayout = findViewById(R.id.bottom_tab_layout);
         bottomTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 onTabItemSelected(tab.getPosition());
                 for(int i = 0; i < bottomTabLayout.getTabCount(); i++){
+                    View view = bottomTabLayout.getTabAt(i).getCustomView();
+                    ImageView icon = view.findViewById(R.id.tab_content_image);
+                    TextView text = view.findViewById(R.id.tab_content_text);
                     if(i == tab.getPosition()){
-                        bottomTabLayout.getTabAt(i).setIcon(getResources().getDrawable((DataGenerator.mTabResPressed[i])));
+                        icon.setImageResource(DataGenerator.mTabResPressed[i]);
+                        text.setTextColor(getResources().getColor(android.R.color.black));
                     }else {
-                        bottomTabLayout.getTabAt(i).setIcon(getResources().getDrawable(DataGenerator.mTabRes[i]));
+                        icon.setImageResource(DataGenerator.mTabRes[i]);
+                        text.setTextColor(getResources().getColor(android.R.color.darker_gray));
                     }
                 }
             }
@@ -44,11 +54,10 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
-        bottomTabLayout.addTab(bottomTabLayout.newTab().setIcon(getResources().getDrawable(DataGenerator.mTabRes[0])).setText(DataGenerator.mTabTitle[0]));
-        bottomTabLayout.addTab(bottomTabLayout.newTab().setIcon(getResources().getDrawable(DataGenerator.mTabRes[1])).setText(DataGenerator.mTabTitle[1]));
-        bottomTabLayout.addTab(bottomTabLayout.newTab().setIcon(getResources().getDrawable(DataGenerator.mTabRes[2])).setText(DataGenerator.mTabTitle[2]));
-        bottomTabLayout.addTab(bottomTabLayout.newTab().setIcon(getResources().getDrawable(DataGenerator.mTabRes[3])).setText(DataGenerator.mTabTitle[3]));
-    }
+        for(int i = 0; i < DataGenerator.mTabRes.length; i++){
+            bottomTabLayout.addTab(bottomTabLayout.newTab().setCustomView(DataGenerator.getTabView(this,i)));
+        }
+      }
     private void onTabItemSelected(int position){
         Fragment fragment = null;
         switch (position){
