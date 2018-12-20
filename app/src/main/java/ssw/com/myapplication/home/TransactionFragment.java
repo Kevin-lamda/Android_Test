@@ -8,18 +8,17 @@ import android.view.ViewGroup;
 
 import ssw.com.myapplication.R;
 
-public class DiscoveryFragment extends Fragment {
+public class TransactionFragment extends Fragment {
     private static Fragment fragment;
     public static  Fragment newInstance(String from){
         if(fragment == null) {
-            fragment = new DiscoveryFragment();
+            fragment = new TransactionFragment();
         }
         return fragment;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState){
-        View view = inflater.inflate(R.layout.fragment_discovery,container,false);
+        View view = inflater.inflate(R.layout.fragment_attention,container,false);
         return view;
     }
-
 }

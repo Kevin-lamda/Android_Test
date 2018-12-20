@@ -10,15 +10,15 @@ import android.widget.TextView;
 import ssw.com.myapplication.R;
 
 public class DataGenerator {
-    public static final int []mTabRes = new int[]{R.drawable.tab_home_selector,R.drawable.tab_discovery_selector,R.drawable.tab_attention_selector,R.drawable.tab_profile_selector,R.drawable.tab_profile_selector};
-    public static final int []mTabResPressed = new int[]{R.drawable.ic_tab_strip_icon_feed_selected,R.drawable.ic_tab_strip_icon_category_selected,R.drawable.ic_tab_strip_icon_pgc_selected,R.drawable.ic_tab_strip_icon_profile_selected,R.drawable.ic_tab_strip_icon_profile_selected};
-    public static final String []mTabTitle = new String[]{"首页","发现","关注","我的","狗市"};
+    public static final int []mTabRes = new int[]{R.drawable.tab_market_selector,R.drawable.tab_information_selector,R.drawable.tab_home_selector,R.drawable.tab_transaction_selector,R.drawable.tab_profile_selector};
+    public static final int []mTabResPressed = new int[]{R.drawable.ic_tab_strip_icon_market_selected,R.drawable.ic_tab_strip_icon_information_selected,R.drawable.ic_tab_strip_icon_home_selected,R.drawable.ic_tab_strip_icon_transaction_selected,R.drawable.ic_tab_strip_icon_profile_selected};
+    public static final String []mTabTitle = new String[]{"狗市","资讯","狗窝","交易","账号"};
 
     public static Fragment[] getFragments(String from){
         Fragment fragments[] = new Fragment[5];
         fragments[0] = HomeFragment.newInstance(from);
-        fragments[1] = DiscoveryFragment.newInstance(from);
-        fragments[2] = AttentionFragment.newInstance(from);
+        fragments[1] = InformationFragment.newInstance(from);
+        fragments[2] = TransactionFragment.newInstance(from);
         fragments[3] = ProfileFragment.newInstance(from);
         fragments[4] = DogMarketFragment.newInstance(from);
         return fragments;
