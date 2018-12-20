@@ -9,8 +9,11 @@ import android.view.ViewGroup;
 import ssw.com.myapplication.R;
 
 public class AttentionFragment extends Fragment {
+    private static Fragment fragment;
     public static  Fragment newInstance(String from){
-        Fragment fragment = new AttentionFragment();
+        if(fragment == null) {
+            fragment = new AttentionFragment();
+        }
         return fragment;
     }
     @Override

@@ -9,8 +9,11 @@ import android.view.ViewGroup;
 import ssw.com.myapplication.R;
 
 public class ProfileFragment extends Fragment {
+    private static Fragment fragment;
     public static  Fragment newInstance(String from){
-        Fragment fragment = new ProfileFragment();
+        if(fragment == null) {
+            fragment = new ProfileFragment();
+        }
         return fragment;
     }
     @Override

@@ -9,8 +9,11 @@ import android.view.ViewGroup;
 import ssw.com.myapplication.R;
 
 public class DiscoveryFragment extends Fragment {
+    private static Fragment fragment;
     public static  Fragment newInstance(String from){
-        Fragment fragment = new DiscoveryFragment();
+        if(fragment == null) {
+            fragment = new DiscoveryFragment();
+        }
         return fragment;
     }
     @Override

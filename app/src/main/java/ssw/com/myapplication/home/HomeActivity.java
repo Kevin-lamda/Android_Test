@@ -54,25 +54,17 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
-        for(int i = 0; i < DataGenerator.mTabRes.length; i++){
+        for(int i = 0; i < mfragments.length; i++){
             bottomTabLayout.addTab(bottomTabLayout.newTab().setCustomView(DataGenerator.getTabView(this,i)));
         }
       }
     private void onTabItemSelected(int position){
         Fragment fragment = null;
-        switch (position){
-            case 0:
-                fragment = mfragments[0];
+        for(int i = 0; i < mfragments.length; i++){
+            if(position == i){
+                fragment = mfragments[i];
                 break;
-            case 1:
-                fragment = mfragments[1];
-                break;
-            case 2:
-                fragment = mfragments[2];
-                break;
-            case 3:
-                fragment = mfragments[3];
-                break;
+            }
         }
         if(fragment != null){
             getSupportFragmentManager().beginTransaction().replace(R.id.home_container,fragment).commit();
