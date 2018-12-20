@@ -1,7 +1,5 @@
-package ssw.com.myapplication;
+package ssw.com.myapplication.baidu;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
@@ -18,18 +16,19 @@ import com.orhanobut.logger.Logger;
 
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.ViewsById;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import ssw.com.myapplication.App;
+import ssw.com.myapplication.R;
+import ssw.com.myapplication.utils.CookieUtils;
 
 @EActivity(R.layout.activity_baidu)
 public class BaiduActivity extends AppCompatActivity {
     @ViewById(R.id.webView)
     WebView webView;
     private String TAG = "BaiduActivity";
-    //private String url = "https://www.baidu.com";
-    private String url = "https://wappass.baidu.com/passport/login?sms=1&adapter=3&u=%2F%2Fwappass.baidu.com%2Fv3%2Flogin%2Fapi%2Fauth%2F%3Freturn_type%3D5%26tpl%3Dblockchain%26u%3Dhttps%253A%252F%252Fpet-chain.baidu.com%252Fdata%252Fuser%252Fsign%253Fu%253Dhttps%25253A%25252F%25252Fpet-chain.baidu.com%25252Fchain%25252Fpersonal";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +48,7 @@ public class BaiduActivity extends AppCompatActivity {
         web.setLoadWithOverviewMode(true);
         web.setSavePassword(true);
         web.setSaveFormData(true);
-        webView.loadUrl(url);
+        webView.loadUrl(App.LOGION_URL);
         webView.setWebViewClient(new MyWebViewClient());
     }
     private class MyWebViewClient extends WebViewClient {
@@ -69,17 +68,14 @@ public class BaiduActivity extends AppCompatActivity {
             CookieManager cookieManager = CookieManager.getInstance();
             String CookieStr = cookieManager.getCookie(url);
             if (CookieStr != null) {
-                if(url.startsWith("https://pet-chain.baidu.com")) {
-
+                if(url.startsWith(App.PET_CHAIN_URL)) {
                     Map<String,String> cookieMap = resolveCookie(CookieStr);
                     String BDUSS = cookieMap.get("BDUSS");
                     String STOKEN = cookieMap.get("STOKEN");
                     if(isNoBlank(BDUSS) && isNoBlank(STOKEN)){
-                        SharedPreferences spf = getSharedPreferences("SPF", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = spf.edit();
-                        editor.putString("baiduCookie", "BDUSS="+BDUSS+";STOKEN="+STOKEN);
-                        if(editor.commit()) {
-                            Toast.makeText(getApplicationContext(), "Cookieq存储完成", Toast.LENGTH_SHORT).show();
+                        boolean status = CookieUtils.setCookie(getBaseContext(),"baiduCookie", "BDUSS="+BDUSS+";STOKEN="+STOKEN);
+                        if(status) {
+                            Toast.makeText(getBaseContext(), "Cookieq存储完成", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }

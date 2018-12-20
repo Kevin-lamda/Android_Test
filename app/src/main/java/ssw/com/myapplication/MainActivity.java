@@ -18,6 +18,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.json.JSONObject;
 
+import ssw.com.myapplication.baidu.BaiduActivity;
 import ssw.com.myapplication.utils.CookieUtils;
 import ssw.com.myapplication.utils.HttpUtils;
 
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @Click(R.id.bt_login)
     public void onbuttonClick(View view) {
-        Intent intent = new Intent(MainActivity.this,BaiduActivity_.class);
+        Intent intent = new Intent(MainActivity.this,BaiduActivity.class);
         startActivity(intent);
     }
     @Click(R.id.bt_clear_cookie)
