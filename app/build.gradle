@@ -10,10 +10,16 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
-            ndkBuild {
-                arguments "NDK_APPLICATION_MK:=src/main/jni/Application.mk"
-                cFlags "-DTEST_C_FLAG1", "-DTEST_C_FLAG2"
-                cppFlags "-DTEST_CPP_FLAG2", "-DTEST_CPP_FLAG2"
+            if (!IS_CMALKE) {
+                ndkBuild {
+                    arguments "NDK_APPLICATION_MK:=src/main/jni/Application.mk"
+                    cFlags "-DTEST_C_FLAG1", "-DTEST_C_FLAG2"
+                    cppFlags "-DTEST_CPP_FLAG2", "-DTEST_CPP_FLAG2"
+                }
+            }else {
+                cmake {
+                    cppFlags "-std=c++11"
+                }
             }
         }
     }
@@ -24,9 +30,16 @@ android {
             proguardFiles.add(file("proguard-rules.pro"))
         }
     }
+
     externalNativeBuild {
-        ndkBuild {
-            path "src/main/jni/Android.mk"
+        if (!IS_CMALKE) {
+            ndkBuild {
+                path "src/main/jni/Android.mk"
+            }
+        }else {
+            cmake {
+                path "CMakeLists.txt"
+            }
         }
     }
     sourceSets.main {
