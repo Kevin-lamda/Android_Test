@@ -32,6 +32,7 @@ public class BaiduActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Logger.i(TAG);
     }
     @Override
     public void onStart(){

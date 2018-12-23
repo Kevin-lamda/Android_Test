@@ -20,10 +20,6 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         initView();
     }
-    @Override
-    public void onStart(){
-        super.onStart();
-    }
     public void initView(){
         bottomTabLayout = findViewById(R.id.bottom_tab_layout);
         bottomTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

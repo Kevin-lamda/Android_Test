@@ -4,7 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.orhanobut.logger.Logger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -15,6 +20,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import ssw.com.myapplication.App;
 
 public class HttpUtils {
     private static OkHttpClient client = new OkHttpClient();
@@ -57,5 +63,21 @@ public class HttpUtils {
             Logger.e("OkHttp GET:",e.getMessage());
         }
         return  null;
+    }
+    public static boolean checkLogin(Context context){
+      try {
+          String req = post(App.PET_CHAIN_URL,LoginUtils.getDefaultParameter(),"POST",CookieUtils.getCookie(context,"baiduCookie"));
+          JSONObject reqJson = null;
+
+          reqJson = new JSONObject(req);
+             String errorNo = reqJson.getString("errorNo");
+             if(errorNo == "00"){
+                 return true;
+             }
+        } catch (JSONException e) {
+            Logger.e(e.getMessage());
+            return  false;
+        }
+        return false;
     }
 }
